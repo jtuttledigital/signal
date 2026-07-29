@@ -1,0 +1,160 @@
+:root {
+  --background: #07090c;
+  --surface: #0d1117;
+  --foreground: #f3f5f7;
+  --muted: #89929d;
+  --border: rgba(255, 255, 255, 0.1);
+  --signal: #72e6ff;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+.preview {
+  width: min(100%, 86rem);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  display: grid;
+  align-content: center;
+  gap: clamp(1.5rem, 4vh, 3rem);
+}
+
+.preview__header {
+  max-width: 40rem;
+}
+
+.preview__header h1 {
+  margin: 0.3rem 0 0.65rem;
+  font-size: clamp(1.75rem, 4vw, 3.25rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+
+.preview__header p,
+.signal-stage__status p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.preview__eyebrow {
+  color: var(--signal) !important;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.signal-stage {
+  position: relative;
+  min-height: clamp(20rem, 46vh, 34rem);
+  overflow: hidden;
+  border-block: 1px solid var(--border);
+}
+
+.signal-canvas {
+  display: block;
+  width: 100%;
+  height: clamp(20rem, 46vh, 34rem);
+  touch-action: pan-y;
+}
+
+.signal-stage__status {
+  position: absolute;
+  inset: auto auto 1.25rem 0;
+  max-width: min(28rem, calc(100% - 2rem));
+  pointer-events: none;
+}
+
+.signal-stage__status span {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.signal-stage__status strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.signal-stage__status p {
+  font-size: 0.85rem;
+}
+
+.behavior-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.behavior-selector button {
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.behavior-selector button:hover {
+  border-color: rgba(114, 230, 255, 0.42);
+  color: var(--foreground);
+}
+
+.behavior-selector button[aria-pressed="true"] {
+  border-color: rgba(114, 230, 255, 0.5);
+  background: rgba(114, 230, 255, 0.09);
+  color: var(--signal);
+}
+
+.behavior-selector button:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+}
+
+@media (max-width: 40rem) {
+  .preview {
+    align-content: start;
+  }
+
+  .signal-stage,
+  .signal-canvas {
+    min-height: 18rem;
+    height: 42vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .behavior-selector button {
+    transition: none;
+  }
+}
