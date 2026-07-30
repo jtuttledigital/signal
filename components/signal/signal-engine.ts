@@ -44,6 +44,11 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
+function smoothstep(value: number): number {
+  const normalized = clamp(value, 0, 1);
+  return normalized * normalized * (3 - 2 * normalized);
+}
+
 export class SignalEngine {
   private readonly canvas: HTMLCanvasElement;
   private readonly context: CanvasRenderingContext2D;
@@ -188,12 +193,75 @@ export class SignalEngine {
     context.lineCap = "round";
     context.lineJoin = "round";
 
-    this.drawTrace(0.22, 4.8, 1.04, -0.016);
-    this.drawTrace(0.32, 2.4, 0.94, 0.012);
+    if (!this.reducedMotion) {
+      this.drawField();
+    }
+
+    this.drawTrace(0.11, 4.2, 1.03, -0.012);
+    this.drawTrace(0.22, 2.1, 0.96, 0.01);
     this.drawTrace(0.92, 0.72, 1, 0);
 
     if (!this.reducedMotion && current.depth > 0.16) {
-      this.drawTrace(0.12 + current.depth * 0.12, 1.35, 0.82, 0.028);
+      this.drawTrace(0.08 + current.depth * 0.08, 1.2, 0.84, 0.024);
+    }
+  }
+
+  private drawField(): void {
+    const { context, width, height, current } = this;
+    const sampleCount = Math.round(clamp(width / 8, 90, 190));
+    const centerY = height * 0.46;
+    const phase = this.elapsedSeconds;
+    const fieldStrength =
+      (0.16 + current.depth * 0.54) *
+      (0.72 + current.focus * 0.28);
+    const fieldBreath = 0.84 + Math.sin(phase * 0.48) * 0.16;
+
+    for (let contour = 3; contour >= 1; contour -= 1) {
+      const direction = contour % 2 === 0 ? -1 : 1;
+      const spread =
+        height *
+        (0.018 + contour * 0.013) *
+        fieldStrength *
+        fieldBreath;
+      const alpha = (0.012 + current.depth * 0.012) * (4 - contour);
+
+      context.beginPath();
+
+      for (let index = 0; index <= sampleCount; index += 1) {
+        const progress = index / sampleCount;
+        const normalizedX = progress * 2 - 1;
+        const edgeTaper = Math.pow(Math.sin(progress * Math.PI), 0.8);
+        const centerEnvelope = Math.exp(
+          -normalizedX * normalizedX * (1.15 + current.focus * 1.8),
+        );
+        const fieldDrift =
+          Math.sin(
+            normalizedX * TAU * (0.62 + current.frequency * 0.34) +
+              phase * (0.28 + contour * 0.035),
+          ) *
+          height *
+          0.006 *
+          current.depth;
+        const x = progress * width;
+        const y =
+          centerY +
+          direction *
+            spread *
+            edgeTaper *
+            (0.42 + centerEnvelope * 0.58) +
+          fieldDrift;
+
+        if (index === 0) {
+          context.moveTo(x, y);
+        } else {
+          context.lineTo(x, y);
+        }
+      }
+
+      context.strokeStyle = `rgba(${SIGNAL_RGB}, ${alpha})`;
+      context.lineWidth =
+        (0.7 + contour * 0.48 + current.depth * 0.8) / Math.sqrt(this.dpr);
+      context.stroke();
     }
   }
 
@@ -207,14 +275,26 @@ export class SignalEngine {
     const sampleCount = Math.round(clamp(width / 4, 140, 340));
     const centerY = height * 0.46;
     const amplitudeMotionScale = this.reducedMotion ? 0.58 : 1;
+    const breath =
+      0.9 +
+      Math.sin(this.elapsedSeconds * (0.42 + current.velocity * 0.16)) *
+        (0.1 - current.complexity * 0.035);
     const amplitude =
-      height * (0.045 + current.amplitude * 0.2) * amplitudeScale * amplitudeMotionScale;
+      height *
+      (0.018 + current.amplitude * 0.17) *
+      amplitudeScale *
+      amplitudeMotionScale *
+      breath;
     const phase = this.elapsedSeconds + phaseOffset * current.depth * 10;
-    const frequency = 0.75 + current.frequency * 2.15;
+    const frequency = 0.72 + current.frequency * 1.86;
     const focusCenter =
-      (current.focus - 0.5) * 0.16 +
+      (current.focus - 0.5) * 0.045 +
       this.pointerX * this.pointerStrength * 0.055;
     const pointerAmount = this.reducedMotion ? 0 : this.pointerStrength;
+    const reasoningAmount = smoothstep((current.complexity - 0.38) / 0.4);
+    const attractorCycle = 0.5 - Math.cos(phase * 0.54) * 0.5;
+    const attractorPresence = smoothstep(attractorCycle) * reasoningAmount;
+    const attractorSeparation = 0.14 + Math.sin(phase * 0.19) * 0.035;
 
     context.beginPath();
 
@@ -225,34 +305,59 @@ export class SignalEngine {
       const envelope = Math.exp(
         -distanceFromFocus * distanceFromFocus * (1.5 + current.focus * 3.8),
       );
+      const gatheredEnergy =
+        1 - current.focus * 0.44 + envelope * current.focus * 0.54;
       const primary = Math.sin(normalizedX * TAU * frequency + phase * 1.1);
       const secondary =
-        Math.sin(normalizedX * TAU * (frequency * 2.08) - phase * 1.52 + 0.8) *
+        Math.sin(normalizedX * TAU * (frequency * 2) - phase * 1.1 + 0.72) *
         current.complexity *
-        0.34;
+        0.24;
       const tertiary =
-        Math.sin(normalizedX * TAU * (frequency * 3.73) + phase * 0.72 - 1.2) *
+        Math.sin(normalizedX * TAU * (frequency * 3) + phase * 0.55 - 1.1) *
         current.complexity *
         current.depth *
-        0.2;
+        0.12;
       const fold =
-        Math.sin(distanceFromFocus * TAU * (4.2 + current.depth * 2.5) - phase * 1.8) *
+        Math.sin(distanceFromFocus * TAU * (2.8 + current.depth * 1.8) - phase * 1.24) *
         envelope *
         current.complexity *
         current.depth *
-        0.38;
+        0.22;
+      const leftAttractorDistance =
+        distanceFromFocus + attractorSeparation;
+      const rightAttractorDistance =
+        distanceFromFocus - attractorSeparation;
+      const leftAttractorEnvelope = Math.exp(
+        -leftAttractorDistance * leftAttractorDistance * 54,
+      );
+      const rightAttractorEnvelope = Math.exp(
+        -rightAttractorDistance * rightAttractorDistance * 54,
+      );
+      const attractor =
+        (Math.sin(leftAttractorDistance * TAU * 5.2 - phase * 1.42) *
+          leftAttractorEnvelope -
+          Math.sin(rightAttractorDistance * TAU * 5.2 + phase * 1.16) *
+            rightAttractorEnvelope) *
+        attractorPresence *
+        current.depth *
+        0.3;
       const deterministicNoise =
         Math.sin(normalizedX * 91.7 + phase * 2.21) *
         Math.sin(normalizedX * 37.1 - phase * 1.37) *
         current.noise *
-        0.16;
+        0.1;
       const pointerDistance = normalizedX - this.pointerX;
       const pointerEnvelope = Math.exp(-pointerDistance * pointerDistance * 17);
       const pointerPull =
         this.pointerY * pointerEnvelope * pointerAmount * height * 0.032;
       const edgeTaper = Math.pow(Math.sin(progress * Math.PI), 0.62);
       const wave =
-        (primary + secondary + tertiary + fold + deterministicNoise) *
+        (primary * gatheredEnergy +
+          secondary +
+          tertiary +
+          fold +
+          attractor +
+          deterministicNoise) *
         amplitude *
         edgeTaper;
       const x = progress * width;

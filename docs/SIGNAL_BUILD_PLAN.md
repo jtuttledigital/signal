@@ -1026,6 +1026,32 @@ At the end of each task, report:
 
 Only consider these after v0.1 is stable:
 
+## Design Direction Update (v0.1.1)
+
+The project has evolved beyond an oscilloscope-inspired visualization.
+
+The long-term goal is to create a continuous behavioral language for AI.
+
+The signal represents the visible edge of a larger cognitive field.
+
+Motion communicates intelligence through continuous behavior rather than discrete animations.
+
+Future development should prioritize:
+
+- coherent behavioral transitions
+- mathematical attractors
+- subtle field interactions
+- anticipation
+- attention
+- resolution
+- calm ambient presence
+
+Avoid literal icons or decorative morphing.
+
+Instead, allow temporary mathematical attractors to emerge naturally from the signal before dissolving back into continuous motion.
+
+The signal should communicate cognition rather than audio.
+
 ### v0.2
 
 - real audio amplitude simulation

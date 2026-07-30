@@ -48,3 +48,25 @@ At the end of each task, report:
 - verification results
 - known limitations
 - next recommended task
+
+## Motion Philosophy
+
+The SIGNAL engine is not an audio visualizer.
+
+It is a behavioral system.
+
+Motion should communicate cognition,
+attention,
+anticipation,
+reasoning,
+and resolution.
+
+The signal should never feel random.
+
+Every movement should appear intentional.
+
+Favor elegant mathematical attractors over literal icon morphing.
+
+Prefer calm, restrained motion over decorative animation.
+
+Motion should communicate progress without demanding attention.
