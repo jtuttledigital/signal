@@ -4,15 +4,20 @@ import { useEffect, useRef } from "react";
 
 import { SignalEngine } from "@/components/signal/signal-engine";
 import { SIGNAL_PRESETS } from "@/components/signal/signal-presets";
-import type { SignalBehavior } from "@/components/signal/signal-types";
+import type {
+  AttractorIntent,
+  SignalBehavior,
+} from "@/components/signal/signal-types";
 
 interface SignalCanvasProps {
+  attractorIntent?: AttractorIntent | null;
   behavior: SignalBehavior;
   className?: string;
   settled?: boolean;
 }
 
 export function SignalCanvas({
+  attractorIntent = null,
   behavior,
   className = "signal-canvas",
   settled = false,
@@ -91,6 +96,10 @@ export function SignalCanvas({
   useEffect(() => {
     engineRef.current?.setBehavior(behavior, settled);
   }, [behavior, settled]);
+
+  useEffect(() => {
+    engineRef.current?.setAttractorIntent(attractorIntent);
+  }, [attractorIntent]);
 
   return (
     <canvas

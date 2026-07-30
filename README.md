@@ -25,6 +25,8 @@ parameter playground for `/system` is deferred to a later phase.
 ## Architecture
 
 - `SignalEngine` owns deterministic frame rendering and parameter interpolation.
+- `signal-attractors` provides pure orbital, figure-eight, and fold samplers;
+  `SignalEngine` owns their runtime interpolation and rendering.
 - `SignalCanvas` owns Canvas sizing, browser events, reduced motion, and cleanup.
 - `useSignalController` owns semantic interaction state, timers, run IDs, local
   response streaming, and stale-response protection.
@@ -53,4 +55,5 @@ npm run build
 - Motion Direction pass — complete
 - Phase 1.5: Behavior Events — complete
 - Phase 2: Product Shell — complete
+- Attractor Events v0.1 — complete
 - Phase 3: Full System Page — pending

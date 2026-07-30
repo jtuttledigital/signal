@@ -6,8 +6,22 @@ export type SignalBehavior =
   | "responding"
   | "completion";
 
+export type SignalAttractor =
+  | "none"
+  | "orbital"
+  | "figure-eight"
+  | "fold";
+
+export interface AttractorIntent {
+  readonly type: SignalAttractor;
+  readonly strength: number;
+  readonly stability: number;
+  readonly phase: number;
+  readonly cycle: boolean;
+}
+
 /**
- * Every engine parameter is normalized to the inclusive 0–1 range.
+ * Every engine and attractor parameter is normalized to the inclusive 0–1 range.
  * Pixel and timing values are derived inside the renderer.
  */
 export interface SignalParameters {
@@ -27,6 +41,7 @@ export interface SignalPreset {
   readonly label: string;
   readonly description: string;
   readonly transitionMs: number;
+  readonly attractor: AttractorIntent;
   readonly parameters: SignalParameters;
 }
 

@@ -1,5 +1,12 @@
+import {
+  getActiveAttractor,
+  getAttractorActivation,
+  sampleAttractorX,
+  sampleAttractorY,
+} from "@/components/signal/signal-attractors";
 import { SIGNAL_PRESETS } from "@/components/signal/signal-presets";
 import type {
+  AttractorIntent,
   SignalBehavior,
   SignalParameters,
   SignalPointer,
@@ -51,17 +58,21 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
-function smoothstep(value: number): number {
-  const normalized = clamp(value, 0, 1);
-  return normalized * normalized * (3 - 2 * normalized);
-}
-
 export class SignalEngine {
   private readonly canvas: HTMLCanvasElement;
   private readonly context: CanvasRenderingContext2D;
   private current: MutableParameters;
   private target: SignalParameters;
   private transitionMs: number;
+  private behavior: SignalBehavior;
+  private attractorIntent: AttractorIntent;
+  private attractorElapsedSeconds = 0;
+  private currentAttractorStrength: number;
+  private currentAttractorStability: number;
+  private currentAttractorPhase: number;
+  private orbitalWeight = 0;
+  private figureEightWeight = 0;
+  private foldWeight = 0;
   private width = 1;
   private height = 1;
   private dpr = 1;
@@ -88,20 +99,45 @@ export class SignalEngine {
     this.current = copyParameters(preset.parameters);
     this.target = preset.parameters;
     this.transitionMs = preset.transitionMs;
+    this.behavior = behavior;
+    this.attractorIntent = preset.attractor;
+    this.currentAttractorStrength = preset.attractor.strength;
+    this.currentAttractorStability = preset.attractor.stability;
+    this.currentAttractorPhase = preset.attractor.phase;
   }
 
   setBehavior(behavior: SignalBehavior, settled = false): void {
     const preset = SIGNAL_PRESETS[behavior];
     const isSettledListening = behavior === "listening" && settled;
+
+    if (behavior !== this.behavior) {
+      this.behavior = behavior;
+      this.attractorElapsedSeconds = 0;
+      this.attractorIntent = preset.attractor;
+    }
+
     this.target = isSettledListening
       ? SETTLED_LISTENING_PARAMETERS
       : preset.parameters;
     this.transitionMs = isSettledListening ? 960 : preset.transitionMs;
   }
 
+  setAttractorIntent(intent: AttractorIntent | null): void {
+    const nextIntent = intent ?? SIGNAL_PRESETS[this.behavior].attractor;
+    this.attractorIntent = {
+      type: nextIntent.type,
+      strength: clamp(nextIntent.strength, 0, 1),
+      stability: clamp(nextIntent.stability, 0, 1),
+      phase: clamp(nextIntent.phase, 0, 1),
+      cycle: nextIntent.cycle,
+    };
+    this.attractorElapsedSeconds = 0;
+  }
+
   setReducedMotion(reducedMotion: boolean): void {
     this.reducedMotion = reducedMotion;
     this.pointerTarget = 0;
+    this.attractorElapsedSeconds = 0;
     this.needsOpaqueFrame = true;
   }
 
@@ -183,9 +219,48 @@ export class SignalEngine {
     this.pointerStrength +=
       (this.pointerTarget - this.pointerStrength) * pointerInterpolation;
 
+    const activeAttractor = getActiveAttractor(
+      this.attractorIntent,
+      this.attractorElapsedSeconds,
+      this.reducedMotion,
+    );
+    const attractorActivation = getAttractorActivation(
+      this.attractorIntent,
+      this.attractorElapsedSeconds,
+      this.reducedMotion,
+    );
+    const attractorInterpolation =
+      1 - Math.exp(-deltaSeconds * (this.reducedMotion ? 2.2 : 4.2));
+    const targetOrbitalWeight =
+      activeAttractor === "orbital" ? attractorActivation : 0;
+    const targetFigureEightWeight =
+      activeAttractor === "figure-eight" ? attractorActivation : 0;
+    const targetFoldWeight =
+      activeAttractor === "fold" ? attractorActivation : 0;
+
+    this.orbitalWeight +=
+      (targetOrbitalWeight - this.orbitalWeight) * attractorInterpolation;
+    this.figureEightWeight +=
+      (targetFigureEightWeight - this.figureEightWeight) *
+      attractorInterpolation;
+    this.foldWeight +=
+      (targetFoldWeight - this.foldWeight) * attractorInterpolation;
+    this.currentAttractorStrength +=
+      (this.attractorIntent.strength - this.currentAttractorStrength) *
+      attractorInterpolation;
+    this.currentAttractorStability +=
+      (this.attractorIntent.stability - this.currentAttractorStability) *
+      attractorInterpolation;
+    this.currentAttractorPhase +=
+      (this.attractorIntent.phase - this.currentAttractorPhase) *
+      attractorInterpolation;
+
     const velocityScale = this.reducedMotion ? 0.12 : 1;
     this.elapsedSeconds +=
       deltaSeconds * (0.12 + this.current.velocity * 1.7) * velocityScale;
+    if (!this.reducedMotion || !this.attractorIntent.cycle) {
+      this.attractorElapsedSeconds += deltaSeconds;
+    }
   }
 
   private render(): void {
@@ -301,10 +376,15 @@ export class SignalEngine {
       (current.focus - 0.5) * 0.045 +
       this.pointerX * this.pointerStrength * 0.055;
     const pointerAmount = this.reducedMotion ? 0 : this.pointerStrength;
-    const reasoningAmount = smoothstep((current.complexity - 0.38) / 0.4);
-    const attractorCycle = 0.5 - Math.cos(phase * 0.54) * 0.5;
-    const attractorPresence = smoothstep(attractorCycle) * reasoningAmount;
-    const attractorSeparation = 0.14 + Math.sin(phase * 0.19) * 0.035;
+    const attractorWeight =
+      this.orbitalWeight + this.figureEightWeight + this.foldWeight;
+    const attractorRadius =
+      0.2 + this.currentAttractorStability * 0.07;
+    const attractorPhase =
+      this.currentAttractorPhase +
+      (this.reducedMotion
+        ? 0
+        : phase * (1 - this.currentAttractorStability) * 0.035);
 
     context.beginPath();
 
@@ -327,50 +407,106 @@ export class SignalEngine {
         current.complexity *
         current.depth *
         0.12;
-      const fold =
-        Math.sin(distanceFromFocus * TAU * (2.8 + current.depth * 1.8) - phase * 1.24) *
-        envelope *
-        current.complexity *
-        current.depth *
-        0.22;
-      const leftAttractorDistance =
-        distanceFromFocus + attractorSeparation;
-      const rightAttractorDistance =
-        distanceFromFocus - attractorSeparation;
-      const leftAttractorEnvelope = Math.exp(
-        -leftAttractorDistance * leftAttractorDistance * 54,
-      );
-      const rightAttractorEnvelope = Math.exp(
-        -rightAttractorDistance * rightAttractorDistance * 54,
-      );
-      const attractor =
-        (Math.sin(leftAttractorDistance * TAU * 5.2 - phase * 1.42) *
-          leftAttractorEnvelope -
-          Math.sin(rightAttractorDistance * TAU * 5.2 + phase * 1.16) *
-            rightAttractorEnvelope) *
-        attractorPresence *
-        current.depth *
-        0.3;
       const deterministicNoise =
         Math.sin(normalizedX * 91.7 + phase * 2.21) *
         Math.sin(normalizedX * 37.1 - phase * 1.37) *
         current.noise *
         0.1;
+      const localAttractorPosition = distanceFromFocus / attractorRadius;
+      const localAttractorSquared =
+        localAttractorPosition * localAttractorPosition;
+      const attractorEnvelope = Math.exp(
+        -localAttractorSquared * localAttractorSquared * 1.25,
+      );
+      const attractorInfluence = clamp(
+        attractorWeight *
+          this.currentAttractorStrength *
+          attractorEnvelope,
+        0,
+        0.86,
+      );
+      let attractorX = 0;
+      let attractorY = 0;
+
+      if (attractorWeight > 0.001) {
+        if (this.orbitalWeight > 0.001) {
+          attractorX +=
+            sampleAttractorX(
+              "orbital",
+              localAttractorPosition,
+              attractorPhase,
+              this.currentAttractorStability,
+            ) * this.orbitalWeight;
+          attractorY +=
+            sampleAttractorY(
+              "orbital",
+              localAttractorPosition,
+              attractorPhase,
+              this.currentAttractorStability,
+            ) * this.orbitalWeight;
+        }
+
+        if (this.figureEightWeight > 0.001) {
+          attractorX +=
+            sampleAttractorX(
+              "figure-eight",
+              localAttractorPosition,
+              attractorPhase,
+              this.currentAttractorStability,
+            ) * this.figureEightWeight;
+          attractorY +=
+            sampleAttractorY(
+              "figure-eight",
+              localAttractorPosition,
+              attractorPhase,
+              this.currentAttractorStability,
+            ) * this.figureEightWeight;
+        }
+
+        if (this.foldWeight > 0.001) {
+          attractorX +=
+            sampleAttractorX(
+              "fold",
+              localAttractorPosition,
+              attractorPhase,
+              this.currentAttractorStability,
+            ) * this.foldWeight;
+          attractorY +=
+            sampleAttractorY(
+              "fold",
+              localAttractorPosition,
+              attractorPhase,
+              this.currentAttractorStability,
+            ) * this.foldWeight;
+        }
+
+        attractorX /= attractorWeight;
+        attractorY /= attractorWeight;
+      }
+
       const pointerDistance = normalizedX - this.pointerX;
       const pointerEnvelope = Math.exp(-pointerDistance * pointerDistance * 17);
       const pointerPull =
         this.pointerY * pointerEnvelope * pointerAmount * height * 0.032;
       const edgeTaper = Math.pow(Math.sin(progress * Math.PI), 0.62);
+      const baseWave =
+        primary * gatheredEnergy +
+        secondary +
+        tertiary +
+        deterministicNoise;
+      const convergedWave =
+        baseWave * (1 - attractorInfluence * 0.78) +
+        attractorY *
+          attractorInfluence *
+          (0.88 + this.currentAttractorStability * 0.16);
       const wave =
-        (primary * gatheredEnergy +
-          secondary +
-          tertiary +
-          fold +
-          attractor +
-          deterministicNoise) *
-        amplitude *
-        edgeTaper;
-      const x = progress * width;
+        convergedWave * amplitude * edgeTaper;
+      const x =
+        progress * width +
+        attractorX *
+          width *
+          (0.035 + this.currentAttractorStability * 0.025) *
+          attractorInfluence;
       const y = centerY + wave + pointerPull;
 
       if (index === 0) {

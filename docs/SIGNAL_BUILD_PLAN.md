@@ -364,6 +364,36 @@ separate animations.
 
 Motion communicates progress without demanding attention.
 
+### Attractor subsystem
+
+Attractors are temporary mathematical convergence fields sampled as part of the
+same continuous signal path. They are not icons, overlays, particles, or
+prerecorded animations.
+
+Initial attractor families:
+
+- `orbital` — a stable elliptical convergence
+- `figure-eight` — a lemniscate-like crossing structure
+- `fold` — a directional compression and release
+
+Each attractor intent defines a family, normalized strength, normalized
+stability, phase, and whether the engine should cycle deterministically through
+the initial families. Family weights interpolate inside `SignalEngine`; React
+may provide semantic intent but never advances attractor frames.
+
+Behavior mapping:
+
+- Presence — no attractor
+- Attention — no attractor; central gathering remains parameter-driven
+- Listening — no attractor by default
+- Reasoning — deterministic orbital → figure-eight → fold sequence
+- Responding — a stable, lower-strength orbital
+- Completion — a clean resolved figure-eight that releases into Presence
+
+Attractors communicate active cognition without demanding attention. They must
+emerge, stabilize, dissolve, and cross between families without snapping or
+breaking the continuous trace.
+
 ### Transition behavior
 
 Use damped interpolation or time-based easing between current and target parameters.
@@ -538,8 +568,9 @@ Do not pretend the response came from a real model.
 ## 11. System Route: `/system`
 
 **Current implementation:** a minimal motion-review surface with a live canvas,
-manual behavior selector, active behavior label, and development context. The
-full parameter playground described below remains Phase 3 work.
+manual behavior selector, compact attractor intent controls, active behavior
+label, and development context. The full parameter playground described below
+remains Phase 3 work.
 
 The system page documents and exposes the motion language.
 
@@ -838,6 +869,29 @@ Acceptance criteria:
 - keyboard operation works
 - no system controls on the product route
 - product feels intentionally minimal
+
+### Phase 2.5 — Attractor events v0.1
+
+**Status:** Complete.
+
+Deliver:
+
+- typed semantic attractor intents
+- orbital, figure-eight, and fold samplers
+- deterministic Reasoning family cycle
+- ordered Responding and resolved Completion mappings
+- continuous family-weight and strength interpolation
+- reduced-motion static or near-static behavior
+- compact `/system` attractor review controls
+
+Acceptance criteria:
+
+- attractors remain part of one continuous generated trace
+- Presence, Attention, and Listening have no default attractor
+- Reasoning reveals at least one attractor during the local work interval
+- Responding remains more ordered and less complex than Reasoning
+- Completion holds a resolved form before returning to Presence
+- manual review overrides reset to the selected behavior defaults
 
 ### Phase 3 — System page
 

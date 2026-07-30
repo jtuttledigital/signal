@@ -17,6 +17,13 @@ export const SIGNAL_PRESETS = {
     label: "Presence",
     description: "A near-silent trace held together by a slow, quiet breath.",
     transitionMs: 1_100,
+    attractor: {
+      type: "none",
+      strength: 0,
+      stability: 1,
+      phase: 0,
+      cycle: false,
+    },
     parameters: {
       amplitude: 0.11,
       frequency: 0.2,
@@ -34,6 +41,13 @@ export const SIGNAL_PRESETS = {
     label: "Attention",
     description: "Energy contracts toward the center without becoming louder.",
     transitionMs: 560,
+    attractor: {
+      type: "none",
+      strength: 0,
+      stability: 0.85,
+      phase: 0,
+      cycle: false,
+    },
     parameters: {
       amplitude: 0.18,
       frequency: 0.29,
@@ -51,6 +65,13 @@ export const SIGNAL_PRESETS = {
     label: "Listening",
     description: "Harmonics align into a responsive, coherent resonance.",
     transitionMs: 720,
+    attractor: {
+      type: "none",
+      strength: 0,
+      stability: 0.82,
+      phase: 0,
+      cycle: false,
+    },
     parameters: {
       amplitude: 0.36,
       frequency: 0.42,
@@ -68,6 +89,13 @@ export const SIGNAL_PRESETS = {
     label: "Reasoning",
     description: "Temporary attractors form, fold, and release with intent.",
     transitionMs: 900,
+    attractor: {
+      type: "orbital",
+      strength: 0.78,
+      stability: 0.58,
+      phase: 0.08,
+      cycle: true,
+    },
     parameters: {
       amplitude: 0.52,
       frequency: 0.5,
@@ -85,6 +113,13 @@ export const SIGNAL_PRESETS = {
     label: "Responding",
     description: "Cognition opens into a clear, measured outward cadence.",
     transitionMs: 820,
+    attractor: {
+      type: "orbital",
+      strength: 0.48,
+      stability: 0.84,
+      phase: 0.18,
+      cycle: false,
+    },
     parameters: {
       amplitude: 0.38,
       frequency: 0.43,
@@ -102,6 +137,13 @@ export const SIGNAL_PRESETS = {
     label: "Completion",
     description: "The field exhales and resolves gradually into quiet presence.",
     transitionMs: 1_650,
+    attractor: {
+      type: "figure-eight",
+      strength: 0.42,
+      stability: 0.94,
+      phase: 0,
+      cycle: false,
+    },
     parameters: {
       amplitude: 0.16,
       frequency: 0.22,
