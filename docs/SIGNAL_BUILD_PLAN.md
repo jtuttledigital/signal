@@ -413,6 +413,10 @@ Disable pointer influence on touch-only devices unless a stable touch interactio
 
 ## 10. Product Route: `/`
 
+**Implementation status:** Phase 2 Product Shell complete. The primary route
+contains the product lifecycle only; manual motion-review controls have moved to
+`/system`.
+
 ### Layout
 
 The page should use the full viewport with restrained chrome.
@@ -532,6 +536,10 @@ Do not pretend the response came from a real model.
 ---
 
 ## 11. System Route: `/system`
+
+**Current implementation:** a minimal motion-review surface with a live canvas,
+manual behavior selector, active behavior label, and development context. The
+full parameter playground described below remains Phase 3 work.
 
 The system page documents and exposes the motion language.
 
@@ -776,6 +784,8 @@ Acceptance criteria:
 
 ### Phase 1.5 — Behavior events
 
+**Status:** Complete.
+
 Deliver:
 
 - focus, typing, pause, submit, response, and completion event mapping
@@ -810,6 +820,8 @@ Acceptance criteria:
 - the simulation is clearly identified as local and does not imply a real model
 
 ### Phase 2 — Product shell
+
+**Status:** Complete.
 
 Deliver:
 

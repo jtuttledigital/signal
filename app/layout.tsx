@@ -4,8 +4,9 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SIGNAL — Engine Preview",
-  description: "A development preview of the SIGNAL motion language.",
+  title: "SIGNAL — A Continuous Visual Language for AI",
+  description:
+    "A product prototype exploring presence, attention, cognition, and resolution through motion.",
 };
 
 interface RootLayoutProps {
