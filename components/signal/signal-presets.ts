@@ -80,6 +80,23 @@ export const SIGNAL_PRESETS = {
       depth: 0.88,
     },
   },
+  responding: {
+    id: "responding",
+    label: "Responding",
+    description: "Cognition opens into a clear, measured outward cadence.",
+    transitionMs: 820,
+    parameters: {
+      amplitude: 0.38,
+      frequency: 0.43,
+      complexity: 0.34,
+      velocity: 0.34,
+      persistence: 0.83,
+      thickness: 0.48,
+      noise: 0.01,
+      focus: 0.7,
+      depth: 0.44,
+    },
+  },
   completion: {
     id: "completion",
     label: "Completion",

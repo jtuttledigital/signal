@@ -3,6 +3,7 @@ export type SignalBehavior =
   | "attention"
   | "listening"
   | "reasoning"
+  | "responding"
   | "completion";
 
 /**

@@ -26,7 +26,8 @@ body {
     sans-serif;
 }
 
-button {
+button,
+textarea {
   font: inherit;
 }
 
@@ -136,9 +137,97 @@ button {
   color: var(--signal);
 }
 
-.behavior-selector button:focus-visible {
+.behavior-selector button:focus-visible,
+.temporary-composer button:focus-visible,
+.temporary-composer textarea:focus-visible {
   outline: 2px solid var(--signal);
   outline-offset: 3px;
+}
+
+.behavior-events {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.85fr);
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  align-items: start;
+}
+
+.temporary-composer,
+.temporary-response {
+  min-width: 0;
+}
+
+.temporary-composer__heading h2,
+.temporary-response h2 {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.temporary-composer__heading p,
+.temporary-composer__hint,
+.temporary-response__status {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.temporary-composer > label {
+  display: block;
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.temporary-composer__controls {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: 0.4rem;
+}
+
+.temporary-composer textarea {
+  width: 100%;
+  min-height: 4.25rem;
+  resize: vertical;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 0.55rem;
+  background: var(--surface);
+  color: var(--foreground);
+  line-height: 1.45;
+}
+
+.temporary-composer textarea::placeholder {
+  color: var(--muted);
+}
+
+.temporary-composer button {
+  align-self: stretch;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgba(114, 230, 255, 0.45);
+  border-radius: 0.55rem;
+  background: rgba(114, 230, 255, 0.09);
+  color: var(--signal);
+  cursor: pointer;
+}
+
+.temporary-composer button:disabled {
+  border-color: var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.temporary-response output {
+  display: block;
+  min-height: 3.5rem;
+  margin-top: 0.8rem;
+  color: var(--foreground);
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 
 @media (max-width: 40rem) {
@@ -151,10 +240,20 @@ button {
     min-height: 18rem;
     height: 42vh;
   }
+
+  .behavior-events {
+    grid-template-columns: 1fr;
+  }
+
+  .temporary-composer__controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .behavior-selector button {
+  .behavior-selector button,
+  .temporary-composer button {
     transition: none;
   }
 }

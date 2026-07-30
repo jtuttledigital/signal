@@ -39,6 +39,8 @@ SIGNAL explores a different model:
 
 > A single continuous trace expresses intelligence through motion, energy, rhythm, persistence, and complexity.
 
+SIGNAL is a behavioral language for AI cognition, not an audio visualizer.
+
 ### Principles
 
 1. **Always alive**  
@@ -355,6 +357,12 @@ signal =
 Do not implement random jitter with `Math.random()` each frame.
 
 Use deterministic functions so the signal remains coherent and reproducible.
+
+Temporary mathematical attractors may emerge during active cognition. They
+should form, evolve, and dissolve continuously rather than appearing as
+separate animations.
+
+Motion communicates progress without demanding attention.
 
 ### Transition behavior
 
@@ -765,6 +773,41 @@ Acceptance criteria:
 - no snapping or blank frames
 - canvas resizes correctly
 - no console errors
+
+### Phase 1.5 — Behavior events
+
+Deliver:
+
+- focus, typing, pause, submit, response, and completion event mapping
+- temporary prompt composer on the review surface
+- local variable-duration simulated work period
+- typed `responding` behavior
+- cancellable timers and stale-response protection
+- completion hold before returning to Presence
+- existing manual behavior controls preserved for visual QA
+
+Behavior sequence:
+
+```text
+Presence
+  → Attention
+  → Listening
+  → Reasoning
+  → Responding
+  → Completion
+  → Presence
+```
+
+Completed work may hold a resolved attractor long enough to register before
+the interface gradually returns to Presence.
+
+Acceptance criteria:
+
+- interaction events produce the complete behavior sequence
+- a typing pause remains in a calmer Listening behavior
+- repeated and rapidly interrupted interactions remain valid
+- obsolete timers cannot overwrite a newer interaction
+- the simulation is clearly identified as local and does not imply a real model
 
 ### Phase 2 — Product shell
 

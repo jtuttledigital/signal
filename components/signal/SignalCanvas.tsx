@@ -9,11 +9,13 @@ import type { SignalBehavior } from "@/components/signal/signal-types";
 interface SignalCanvasProps {
   behavior: SignalBehavior;
   className?: string;
+  settled?: boolean;
 }
 
 export function SignalCanvas({
   behavior,
   className = "signal-canvas",
+  settled = false,
 }: SignalCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<SignalEngine | null>(null);
@@ -87,8 +89,8 @@ export function SignalCanvas({
   }, []);
 
   useEffect(() => {
-    engineRef.current?.setBehavior(behavior);
-  }, [behavior]);
+    engineRef.current?.setBehavior(behavior, settled);
+  }, [behavior, settled]);
 
   return (
     <canvas

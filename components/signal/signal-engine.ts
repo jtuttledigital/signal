@@ -21,6 +21,13 @@ const MAX_DPR = 2;
 const BACKGROUND = "7, 9, 12";
 const SIGNAL_RGB = "114, 230, 255";
 const TAU = Math.PI * 2;
+const SETTLED_LISTENING_PARAMETERS: SignalParameters = {
+  ...SIGNAL_PRESETS.listening.parameters,
+  amplitude: 0.31,
+  complexity: 0.19,
+  velocity: 0.26,
+  persistence: 0.87,
+};
 
 type MutableParameters = {
   -readonly [Key in keyof SignalParameters]: number;
@@ -83,10 +90,13 @@ export class SignalEngine {
     this.transitionMs = preset.transitionMs;
   }
 
-  setBehavior(behavior: SignalBehavior): void {
+  setBehavior(behavior: SignalBehavior, settled = false): void {
     const preset = SIGNAL_PRESETS[behavior];
-    this.target = preset.parameters;
-    this.transitionMs = preset.transitionMs;
+    const isSettledListening = behavior === "listening" && settled;
+    this.target = isSettledListening
+      ? SETTLED_LISTENING_PARAMETERS
+      : preset.parameters;
+    this.transitionMs = isSettledListening ? 960 : preset.transitionMs;
   }
 
   setReducedMotion(reducedMotion: boolean): void {
