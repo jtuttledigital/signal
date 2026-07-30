@@ -25,6 +25,8 @@ parameter playground for `/system` is deferred to a later phase.
 ## Architecture
 
 - `SignalEngine` owns deterministic frame rendering and parameter interpolation.
+- Typed oscillator presets define X/Y frequency, ratio, phase, amplitude,
+  harmonic, symmetry, persistence, and energy targets.
 - `signal-attractors` provides pure orbital, figure-eight, and fold samplers;
   `SignalEngine` owns their runtime interpolation and rendering.
 - `SignalCanvas` owns Canvas sizing, browser events, reduced motion, and cleanup.
@@ -56,4 +58,5 @@ npm run build
 - Phase 1.5: Behavior Events — complete
 - Phase 2: Product Shell — complete
 - Attractor Events v0.1 — complete
+- Oscilloscope Tuning v0.1 — complete
 - Phase 3: Full System Page — pending

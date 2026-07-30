@@ -334,29 +334,35 @@ Presets are semantic targets, not separate animations.
 
 ### Base signal
 
-Build the waveform from a small combination of continuous functions:
-
-- primary sine wave
-- secondary harmonic
-- tertiary harmonic
-- localized center envelope
-- optional low-amplitude deterministic noise
-- optional phase offset for secondary traces
-
-A useful conceptual form is:
+Treat the signal as one unbroken parametric drawing path:
 
 ```text
-signal =
-  primary wave
-  + secondary harmonic × complexity
-  + tertiary harmonic × complexity
-  + localized reasoning fold
-  + pointer influence
+x = f(t)
+y = g(t)
 ```
 
-Do not implement random jitter with `Math.random()` each frame.
+The primary geometry emerges from the relationship between the X and Y
+oscillators:
 
-Use deterministic functions so the signal remains coherent and reproducible.
+- X and Y frequency
+- frequency ratio
+- relative phase
+- independent X and Y amplitude
+- harmonic contribution
+- symmetry and deterministic asymmetry
+- energy and damping
+
+The renderer samples this relationship as a continuous XY curve. X must not be
+treated primarily as monotonically increasing screen position with Y applied as
+waveform displacement.
+
+Oscilloscope-inspired generation means borrowing parametric oscillator,
+Lissajous, phase, and phosphor-decay principles. It does not mean importing,
+tracing, or replaying SVG paths, images, audio exports, or prerecorded shapes.
+
+Do not implement random jitter with `Math.random()` each frame. Frequency and
+phase targets interpolate continuously so crossings and loops transform without
+snapping.
 
 Temporary mathematical attractors may emerge during active cognition. They
 should form, evolve, and dissolve continuously rather than appearing as
@@ -410,11 +416,15 @@ A simple exponential interpolation is acceptable for v0.1.
 
 ### Persistence
 
-Create oscilloscope-like persistence by drawing a low-opacity background over the prior frame rather than clearing the canvas completely.
+Persistence is a rendering property, not a decorative glow effect. Draw a
+controlled low-opacity background over the prior frame rather than clearing the
+canvas harshly.
 
-The persistence parameter should influence the fade amount.
+The persistence parameter controls phosphor-like decay: the newest trace stays
+crisp while prior paths fade smoothly enough to clarify motion.
 
-Do not let afterimages create a muddy full-screen glow.
+Do not let afterimages, secondary strokes, or field contours accumulate into a
+muddy full-screen bloom.
 
 ### Layering
 
@@ -568,9 +578,9 @@ Do not pretend the response came from a real model.
 ## 11. System Route: `/system`
 
 **Current implementation:** a minimal motion-review surface with a live canvas,
-manual behavior selector, compact attractor intent controls, active behavior
-label, and development context. The full parameter playground described below
-remains Phase 3 work.
+manual behavior selector, compact XY oscillator controls, compact attractor
+intent controls, active behavior label, and development context. The full
+parameter playground described below remains Phase 3 work.
 
 The system page documents and exposes the motion language.
 
@@ -892,6 +902,28 @@ Acceptance criteria:
 - Responding remains more ordered and less complex than Reasoning
 - Completion holds a resolved form before returning to Presence
 - manual review overrides reset to the selected behavior defaults
+
+### Phase 2.6 — Oscilloscope tuning v0.1
+
+**Status:** Complete.
+
+Deliver:
+
+- continuous parametric XY path generation
+- typed oscillator targets per semantic behavior
+- interpolated frequency, ratio, phase, amplitude, harmonic, and symmetry
+- adaptive high-density curve sampling
+- restrained phosphor-like persistence
+- compact `/system` oscillator review controls
+- reduced-motion phase damping with the same mathematical identity
+
+Acceptance criteria:
+
+- the signal reads as an XY vector drawing rather than a horizontal waveform
+- oscillator relationships create coherent loops, crossings, and folds
+- target interpolation remains continuous and deterministic
+- the newest trace remains crisp while older traces decay cleanly
+- Product Shell composition and semantic lifecycle remain unchanged
 
 ### Phase 3 — System page
 

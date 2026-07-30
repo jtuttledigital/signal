@@ -7,6 +7,7 @@ import {
 import { SIGNAL_PRESETS } from "@/components/signal/signal-presets";
 import type {
   AttractorIntent,
+  OscillatorParameters,
   SignalBehavior,
   SignalParameters,
   SignalPointer,
@@ -24,6 +25,19 @@ const PARAMETER_KEYS = [
   "depth",
 ] as const satisfies readonly (keyof SignalParameters)[];
 
+const OSCILLATOR_KEYS = [
+  "xFrequency",
+  "yFrequency",
+  "frequencyRatio",
+  "phaseOffset",
+  "xAmplitude",
+  "yAmplitude",
+  "harmonic",
+  "symmetry",
+  "persistence",
+  "energy",
+] as const satisfies readonly (keyof OscillatorParameters)[];
+
 const MAX_DPR = 2;
 const BACKGROUND = "7, 9, 12";
 const SIGNAL_RGB = "114, 230, 255";
@@ -40,6 +54,10 @@ type MutableParameters = {
   -readonly [Key in keyof SignalParameters]: number;
 };
 
+type MutableOscillatorParameters = {
+  -readonly [Key in keyof OscillatorParameters]: number;
+};
+
 function copyParameters(source: SignalParameters): MutableParameters {
   return {
     amplitude: source.amplitude,
@@ -54,6 +72,23 @@ function copyParameters(source: SignalParameters): MutableParameters {
   };
 }
 
+function copyOscillatorParameters(
+  source: OscillatorParameters,
+): MutableOscillatorParameters {
+  return {
+    xFrequency: source.xFrequency,
+    yFrequency: source.yFrequency,
+    frequencyRatio: source.frequencyRatio,
+    phaseOffset: source.phaseOffset,
+    xAmplitude: source.xAmplitude,
+    yAmplitude: source.yAmplitude,
+    harmonic: source.harmonic,
+    symmetry: source.symmetry,
+    persistence: source.persistence,
+    energy: source.energy,
+  };
+}
+
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
@@ -63,6 +98,8 @@ export class SignalEngine {
   private readonly context: CanvasRenderingContext2D;
   private current: MutableParameters;
   private target: SignalParameters;
+  private currentOscillator: MutableOscillatorParameters;
+  private targetOscillator: OscillatorParameters;
   private transitionMs: number;
   private behavior: SignalBehavior;
   private attractorIntent: AttractorIntent;
@@ -98,6 +135,8 @@ export class SignalEngine {
     this.context = context;
     this.current = copyParameters(preset.parameters);
     this.target = preset.parameters;
+    this.currentOscillator = copyOscillatorParameters(preset.oscillator);
+    this.targetOscillator = preset.oscillator;
     this.transitionMs = preset.transitionMs;
     this.behavior = behavior;
     this.attractorIntent = preset.attractor;
@@ -119,7 +158,25 @@ export class SignalEngine {
     this.target = isSettledListening
       ? SETTLED_LISTENING_PARAMETERS
       : preset.parameters;
+    this.targetOscillator = preset.oscillator;
     this.transitionMs = isSettledListening ? 960 : preset.transitionMs;
+  }
+
+  setOscillatorParameters(parameters: OscillatorParameters | null): void {
+    const nextParameters =
+      parameters ?? SIGNAL_PRESETS[this.behavior].oscillator;
+    this.targetOscillator = {
+      xFrequency: clamp(nextParameters.xFrequency, 0.5, 4),
+      yFrequency: clamp(nextParameters.yFrequency, 0.5, 4),
+      frequencyRatio: clamp(nextParameters.frequencyRatio, 0.5, 2),
+      phaseOffset: clamp(nextParameters.phaseOffset, 0, 1),
+      xAmplitude: clamp(nextParameters.xAmplitude, 0, 1),
+      yAmplitude: clamp(nextParameters.yAmplitude, 0, 1),
+      harmonic: clamp(nextParameters.harmonic, 0, 1),
+      symmetry: clamp(nextParameters.symmetry, 0, 1),
+      persistence: clamp(nextParameters.persistence, 0, 1),
+      energy: clamp(nextParameters.energy, 0, 1),
+    };
   }
 
   setAttractorIntent(intent: AttractorIntent | null): void {
@@ -215,6 +272,12 @@ export class SignalEngine {
       this.current[key] += (this.target[key] - this.current[key]) * interpolation;
     }
 
+    for (const key of OSCILLATOR_KEYS) {
+      this.currentOscillator[key] +=
+        (this.targetOscillator[key] - this.currentOscillator[key]) *
+        interpolation;
+    }
+
     const pointerInterpolation = 1 - Math.exp(-deltaSeconds * 7);
     this.pointerStrength +=
       (this.pointerTarget - this.pointerStrength) * pointerInterpolation;
@@ -264,13 +327,17 @@ export class SignalEngine {
   }
 
   private render(): void {
-    const { context, width, height, current } = this;
+    const { context, width, height, currentOscillator } = this;
 
     if (this.needsOpaqueFrame || this.reducedMotion) {
       context.fillStyle = `rgb(${BACKGROUND})`;
       this.needsOpaqueFrame = false;
     } else {
-      const fadeAlpha = clamp(0.34 - current.persistence * 0.28, 0.065, 0.28);
+      const fadeAlpha = clamp(
+        0.29 - currentOscillator.persistence * 0.22,
+        0.06,
+        0.2,
+      );
       context.fillStyle = `rgba(${BACKGROUND}, ${fadeAlpha})`;
     }
 
@@ -282,12 +349,12 @@ export class SignalEngine {
       this.drawField();
     }
 
-    this.drawTrace(0.11, 4.2, 1.03, -0.012);
-    this.drawTrace(0.22, 2.1, 0.96, 0.01);
-    this.drawTrace(0.92, 0.72, 1, 0);
+    this.drawTrace(0.07, 3.4, 1.025, -0.008);
+    this.drawTrace(0.16, 1.7, 0.98, 0.007);
+    this.drawTrace(0.94, 0.68, 1, 0);
 
-    if (!this.reducedMotion && current.depth > 0.16) {
-      this.drawTrace(0.08 + current.depth * 0.08, 1.2, 0.84, 0.024);
+    if (!this.reducedMotion && this.current.depth > 0.16) {
+      this.drawTrace(0.055 + this.current.depth * 0.06, 1.05, 0.88, 0.015);
     }
   }
 
@@ -356,30 +423,66 @@ export class SignalEngine {
     amplitudeScale: number,
     phaseOffset: number,
   ): void {
-    const { context, width, height, current } = this;
-    const sampleCount = Math.round(clamp(width / 4, 140, 340));
+    const {
+      context,
+      width,
+      height,
+      current,
+      currentOscillator,
+    } = this;
+    const sampleCount = Math.round(
+      clamp(width / 1.8 + currentOscillator.energy * 180, 320, 760),
+    );
+    const centerX =
+      width *
+      (0.5 +
+        (current.focus - 0.5) * 0.008 +
+        this.pointerX * this.pointerStrength * 0.012);
     const centerY = height * 0.46;
     const amplitudeMotionScale = this.reducedMotion ? 0.58 : 1;
     const breath =
       0.9 +
       Math.sin(this.elapsedSeconds * (0.42 + current.velocity * 0.16)) *
         (0.1 - current.complexity * 0.035);
-    const amplitude =
+    const energyScale = 0.72 + currentOscillator.energy * 0.42;
+    const focusScale = 1 - current.focus * 0.1;
+    const xAmplitude =
+      width *
+      (0.14 + currentOscillator.xAmplitude * 0.24) *
+      amplitudeScale *
+      energyScale *
+      focusScale *
+      breath;
+    const yAmplitude =
       height *
-      (0.018 + current.amplitude * 0.17) *
+      (0.1 + currentOscillator.yAmplitude * 0.22) *
       amplitudeScale *
       amplitudeMotionScale *
+      energyScale *
+      focusScale *
       breath;
-    const phase = this.elapsedSeconds + phaseOffset * current.depth * 10;
-    const frequency = 0.72 + current.frequency * 1.86;
-    const focusCenter =
-      (current.focus - 0.5) * 0.045 +
-      this.pointerX * this.pointerStrength * 0.055;
+    const phase = this.elapsedSeconds;
+    const phaseDriftScale = this.reducedMotion ? 0.08 : 1;
+    const xPhase =
+      phase *
+        (0.16 + current.velocity * 0.16) *
+        phaseDriftScale +
+      phaseOffset * TAU;
+    const yPhase =
+      currentOscillator.phaseOffset * TAU +
+      phase *
+        (0.2 + current.velocity * 0.2) *
+        phaseDriftScale -
+      phaseOffset * TAU * 0.7;
+    const xFrequency = currentOscillator.xFrequency;
+    const yFrequency =
+      currentOscillator.yFrequency * currentOscillator.frequencyRatio;
+    const harmonicAmount =
+      currentOscillator.harmonic * (0.2 + current.complexity * 0.8);
+    const asymmetry = 1 - currentOscillator.symmetry;
     const pointerAmount = this.reducedMotion ? 0 : this.pointerStrength;
     const attractorWeight =
       this.orbitalWeight + this.figureEightWeight + this.foldWeight;
-    const attractorRadius =
-      0.2 + this.currentAttractorStability * 0.07;
     const attractorPhase =
       this.currentAttractorPhase +
       (this.reducedMotion
@@ -390,40 +493,39 @@ export class SignalEngine {
 
     for (let index = 0; index <= sampleCount; index += 1) {
       const progress = index / sampleCount;
-      const normalizedX = progress * 2 - 1;
-      const distanceFromFocus = normalizedX - focusCenter;
-      const envelope = Math.exp(
-        -distanceFromFocus * distanceFromFocus * (1.5 + current.focus * 3.8),
-      );
-      const gatheredEnergy =
-        1 - current.focus * 0.44 + envelope * current.focus * 0.54;
-      const primary = Math.sin(normalizedX * TAU * frequency + phase * 1.1);
-      const secondary =
-        Math.sin(normalizedX * TAU * (frequency * 2) - phase * 1.1 + 0.72) *
-        current.complexity *
+      const pathPosition = progress * 2 - 1;
+      const theta = progress * TAU;
+      const xFundamental = Math.sin(theta * xFrequency + xPhase);
+      const yFundamental = Math.sin(theta * yFrequency + yPhase);
+      const xHarmonic =
+        Math.sin(theta * xFrequency * 2 - xPhase * 0.45 + 0.62) *
+        harmonicAmount *
+        0.22;
+      const yHarmonic =
+        Math.sin(theta * yFrequency * 2 + yPhase * 0.38 - 0.4) *
+        harmonicAmount *
         0.24;
-      const tertiary =
-        Math.sin(normalizedX * TAU * (frequency * 3) + phase * 0.55 - 1.1) *
-        current.complexity *
-        current.depth *
+      const xAsymmetry =
+        Math.cos(theta * (xFrequency + 1) + xPhase * 0.2) *
+        asymmetry *
         0.12;
-      const deterministicNoise =
-        Math.sin(normalizedX * 91.7 + phase * 2.21) *
-        Math.sin(normalizedX * 37.1 - phase * 1.37) *
+      const yAsymmetry =
+        Math.sin(theta * (yFrequency + 0.5) - yPhase * 0.18) *
+        asymmetry *
+        0.13;
+      const deterministicTexture =
+        Math.sin(theta * 7.3 + phase * 0.21) *
+        Math.sin(theta * 3.1 - phase * 0.13) *
         current.noise *
-        0.1;
-      const localAttractorPosition = distanceFromFocus / attractorRadius;
-      const localAttractorSquared =
-        localAttractorPosition * localAttractorPosition;
-      const attractorEnvelope = Math.exp(
-        -localAttractorSquared * localAttractorSquared * 1.25,
-      );
+        0.05;
+      const baseX =
+        xFundamental + xHarmonic + xAsymmetry + deterministicTexture;
+      const baseY =
+        yFundamental + yHarmonic + yAsymmetry - deterministicTexture;
       const attractorInfluence = clamp(
-        attractorWeight *
-          this.currentAttractorStrength *
-          attractorEnvelope,
+        attractorWeight * this.currentAttractorStrength,
         0,
-        0.86,
+        0.82,
       );
       let attractorX = 0;
       let attractorY = 0;
@@ -433,14 +535,14 @@ export class SignalEngine {
           attractorX +=
             sampleAttractorX(
               "orbital",
-              localAttractorPosition,
+              pathPosition,
               attractorPhase,
               this.currentAttractorStability,
             ) * this.orbitalWeight;
           attractorY +=
             sampleAttractorY(
               "orbital",
-              localAttractorPosition,
+              pathPosition,
               attractorPhase,
               this.currentAttractorStability,
             ) * this.orbitalWeight;
@@ -450,14 +552,14 @@ export class SignalEngine {
           attractorX +=
             sampleAttractorX(
               "figure-eight",
-              localAttractorPosition,
+              pathPosition,
               attractorPhase,
               this.currentAttractorStability,
             ) * this.figureEightWeight;
           attractorY +=
             sampleAttractorY(
               "figure-eight",
-              localAttractorPosition,
+              pathPosition,
               attractorPhase,
               this.currentAttractorStability,
             ) * this.figureEightWeight;
@@ -467,14 +569,14 @@ export class SignalEngine {
           attractorX +=
             sampleAttractorX(
               "fold",
-              localAttractorPosition,
+              pathPosition,
               attractorPhase,
               this.currentAttractorStability,
             ) * this.foldWeight;
           attractorY +=
             sampleAttractorY(
               "fold",
-              localAttractorPosition,
+              pathPosition,
               attractorPhase,
               this.currentAttractorStability,
             ) * this.foldWeight;
@@ -484,30 +586,20 @@ export class SignalEngine {
         attractorY /= attractorWeight;
       }
 
-      const pointerDistance = normalizedX - this.pointerX;
-      const pointerEnvelope = Math.exp(-pointerDistance * pointerDistance * 17);
+      const convergedX =
+        baseX * (1 - attractorInfluence * 0.7) +
+        attractorX * attractorInfluence * 0.82;
+      const convergedY =
+        baseY * (1 - attractorInfluence * 0.7) +
+        attractorY * attractorInfluence * 0.82;
+      const pointerDistance = convergedX - this.pointerX;
+      const pointerEnvelope = Math.exp(-pointerDistance * pointerDistance * 7);
+      const pointerPullX =
+        this.pointerX * pointerEnvelope * pointerAmount * width * 0.01;
       const pointerPull =
         this.pointerY * pointerEnvelope * pointerAmount * height * 0.032;
-      const edgeTaper = Math.pow(Math.sin(progress * Math.PI), 0.62);
-      const baseWave =
-        primary * gatheredEnergy +
-        secondary +
-        tertiary +
-        deterministicNoise;
-      const convergedWave =
-        baseWave * (1 - attractorInfluence * 0.78) +
-        attractorY *
-          attractorInfluence *
-          (0.88 + this.currentAttractorStability * 0.16);
-      const wave =
-        convergedWave * amplitude * edgeTaper;
-      const x =
-        progress * width +
-        attractorX *
-          width *
-          (0.035 + this.currentAttractorStability * 0.025) *
-          attractorInfluence;
-      const y = centerY + wave + pointerPull;
+      const x = centerX + convergedX * xAmplitude + pointerPullX;
+      const y = centerY + convergedY * yAmplitude + pointerPull;
 
       if (index === 0) {
         context.moveTo(x, y);

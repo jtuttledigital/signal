@@ -21,7 +21,24 @@ export interface AttractorIntent {
 }
 
 /**
- * Every engine and attractor parameter is normalized to the inclusive 0–1 range.
+ * Oscillator frequencies are measured in cycles per sampled path. Phase is
+ * normalized to one turn; all remaining oscillator values use the 0–1 range.
+ */
+export interface OscillatorParameters {
+  readonly xFrequency: number;
+  readonly yFrequency: number;
+  readonly frequencyRatio: number;
+  readonly phaseOffset: number;
+  readonly xAmplitude: number;
+  readonly yAmplitude: number;
+  readonly harmonic: number;
+  readonly symmetry: number;
+  readonly persistence: number;
+  readonly energy: number;
+}
+
+/**
+ * Every semantic engine parameter is normalized to the inclusive 0–1 range.
  * Pixel and timing values are derived inside the renderer.
  */
 export interface SignalParameters {
@@ -42,6 +59,7 @@ export interface SignalPreset {
   readonly description: string;
   readonly transitionMs: number;
   readonly attractor: AttractorIntent;
+  readonly oscillator: OscillatorParameters;
   readonly parameters: SignalParameters;
 }
 

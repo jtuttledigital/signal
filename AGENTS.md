@@ -67,6 +67,9 @@ Every movement should appear intentional.
 
 Favor elegant mathematical attractors over literal icon morphing.
 
+Treat the signal as one continuous parametric XY path. Use oscillator
+relationships rather than imported or traced shapes.
+
 Prefer calm, restrained motion over decorative animation.
 
 Motion should communicate progress without demanding attention.

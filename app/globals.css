@@ -344,6 +344,7 @@ textarea {
   color: var(--signal);
 }
 
+.oscillator-review,
 .attractor-review {
   padding-top: 1.25rem;
   border-top: 1px solid var(--border);
@@ -386,7 +387,15 @@ textarea {
   gap: clamp(1rem, 3vw, 2.5rem);
 }
 
-.attractor-controls label {
+.oscillator-controls {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(8rem, 1fr));
+  gap: 1rem clamp(1rem, 2vw, 1.75rem);
+}
+
+.attractor-controls label,
+.oscillator-controls label {
   min-width: 0;
   display: grid;
   gap: 0.55rem;
@@ -394,13 +403,15 @@ textarea {
   font-size: 0.72rem;
 }
 
-.attractor-controls label > span {
+.attractor-controls label > span,
+.oscillator-controls label > span {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
 }
 
-.attractor-controls output {
+.attractor-controls output,
+.oscillator-controls output {
   color: var(--foreground);
   font-variant-numeric: tabular-nums;
 }
@@ -416,7 +427,8 @@ textarea {
   font: inherit;
 }
 
-.attractor-controls input[type="range"] {
+.attractor-controls input[type="range"],
+.oscillator-controls input[type="range"] {
   width: 100%;
   margin: 0;
   accent-color: var(--signal);
@@ -428,8 +440,10 @@ textarea {
 .prompt-composer textarea:focus-visible,
 .behavior-selector button:focus-visible,
 .attractor-review button:focus-visible,
+.oscillator-review button:focus-visible,
 .attractor-controls select:focus-visible,
-.attractor-controls input:focus-visible {
+.attractor-controls input:focus-visible,
+.oscillator-controls input:focus-visible {
   outline: 2px solid var(--signal);
   outline-offset: 3px;
 }
@@ -471,6 +485,10 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .oscillator-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .system-preview,
   .system-preview .signal-canvas {
     min-height: 18rem;
@@ -484,6 +502,10 @@ textarea {
 
   .composer-hint {
     text-align: left;
+  }
+
+  .oscillator-controls {
+    grid-template-columns: 1fr;
   }
 }
 

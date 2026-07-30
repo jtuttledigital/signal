@@ -6,6 +6,7 @@ import { SignalEngine } from "@/components/signal/signal-engine";
 import { SIGNAL_PRESETS } from "@/components/signal/signal-presets";
 import type {
   AttractorIntent,
+  OscillatorParameters,
   SignalBehavior,
 } from "@/components/signal/signal-types";
 
@@ -13,6 +14,7 @@ interface SignalCanvasProps {
   attractorIntent?: AttractorIntent | null;
   behavior: SignalBehavior;
   className?: string;
+  oscillatorParameters?: OscillatorParameters | null;
   settled?: boolean;
 }
 
@@ -20,6 +22,7 @@ export function SignalCanvas({
   attractorIntent = null,
   behavior,
   className = "signal-canvas",
+  oscillatorParameters = null,
   settled = false,
 }: SignalCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -100,6 +103,10 @@ export function SignalCanvas({
   useEffect(() => {
     engineRef.current?.setAttractorIntent(attractorIntent);
   }, [attractorIntent]);
+
+  useEffect(() => {
+    engineRef.current?.setOscillatorParameters(oscillatorParameters);
+  }, [oscillatorParameters]);
 
   return (
     <canvas
