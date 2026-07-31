@@ -73,3 +73,15 @@ relationships rather than imported or traced shapes.
 Prefer calm, restrained motion over decorative animation.
 
 Motion should communicate progress without demanding attention.
+
+## Motion Semantics
+
+- SIGNAL is one continuous behavioral system, not a collection of separate animations.
+- Every behavior must preserve the shared visual identity while communicating a distinct semantic action.
+- Tune behaviors through shared mathematical parameters before adding behavior-specific rendering code.
+- Preserve phase, momentum, and restrained residual memory across transitions.
+- Reasoning should discover, hold, and transform coherent structures rather than remain constantly busy.
+- Responding should be more ordered and directional than Reasoning.
+- Completion should lock, hold, and exhale rather than simply reduce amplitude.
+- Motion should communicate progress without demanding attention.
+- Do not use color, amplitude, or speed alone to distinguish behaviors.
