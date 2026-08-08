@@ -50,6 +50,8 @@ parameter playground for `/system` is deferred to a later phase.
 - `SignalCanvas` owns Canvas sizing, browser events, reduced motion, and cleanup.
 - `signal-events` defines the renderer-independent runtime event contract,
   optional workflow extensions, semantic envelope, and pure transition rules.
+- `signal-expression` maps accepted runtime events into eight deterministic,
+  normalized expression targets without changing presets or renderer output.
 - `useSignalController` normalizes observable product events, owns timers and
   run IDs, and preserves stale-response protection before renderer behaviors
   change.
@@ -84,4 +86,5 @@ npm run build
 - Phase 3: Full System Page — pending
 - Direction V2 documentation alignment — complete
 - Direction V2 runtime event model — complete
-- Direction V2 adaptive expression — pending
+- Direction V2 adaptive expression — complete
+- Direction V2 rendering adapter / controlled integration — pending

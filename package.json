@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "lint": "eslint .",
-    "test": "node --experimental-default-type=module --test --experimental-strip-types components/signal/signal-events.test.mjs"
+    "test": "node --experimental-default-type=module --test --experimental-strip-types components/signal/*.test.mjs"
   },
   "dependencies": {
     "next": "latest",

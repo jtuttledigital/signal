@@ -61,6 +61,24 @@ Short-lived qualities that modify a behavior without becoming new public states:
 - novelty
 - residual motion memory
 
+## Adaptive expression dimensions
+
+The adaptive expression layer converts accepted observable events into bounded
+targets. These dimensions describe semantic visual intent, not direct Canvas
+parameters or claims about hidden model state:
+
+- **Energy:** overall activity and visual effort, not amplitude
+- **Coherence:** structural order and alignment
+- **Convergence:** movement toward a stable resolved form
+- **Branching:** parallel or divergent activity
+- **Focus:** spatial or semantic concentration
+- **Continuity:** resistance to abrupt visual reset
+- **Complexity:** earned structural richness
+- **Persistence:** strength of recent visual memory
+
+Targets preserve prior expression state through bounded event-level blending.
+Frame interpolation and renderer-specific parameter mapping remain separate.
+
 ## Cohesion rules
 
 1. **One species**  

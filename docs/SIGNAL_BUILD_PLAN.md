@@ -256,11 +256,27 @@ catalog lives in [Direction V2](SIGNAL_DIRECTION_V2.md).
 
 ### Adaptive expression layer
 
-A future engine-independent mapping layer will translate runtime events into
-continuous expression dimensions such as energy, coherence, convergence,
-branching, focus, continuity, complexity, and persistence. It sits between the
-product event lifecycle and renderer targets so product integrations remain
+The implemented engine-independent mapping layer translates accepted runtime
+events into normalized energy, coherence, convergence, branching, focus,
+continuity, complexity, and persistence targets. It sits between the product
+event lifecycle and a future rendering adapter so product integrations remain
 observable-event-first and the renderer remains deterministic.
+
+`components/signal/signal-expression.ts` provides an immutable Presence
+baseline and a pure event reducer. Each accepted event produces bounded target
+movement from the previous expression state; it does not perform frame-level
+animation. Observable input length, elapsed processing time, stream rate,
+stream cadence, and interruption count may contribute modest deterministic
+influence. Every dimension is clamped to `0–1`.
+
+Level 1 events always produce a complete target. Optional Level 2 work can add
+earned branching, complexity, convergence, or persistence. Optional Level 3
+values merge according to their recorded `observed`, `derived`, or `external`
+provenance; confidence and uncertainty remain weak proxies rather than model
+truth. Missing optional data preserves valid defaults.
+
+The expression layer is not connected to presets, path count, Canvas rendering,
+or React. Phase C therefore changes no visible output.
 
 The expression hierarchy is:
 
@@ -1324,9 +1340,13 @@ changing rendering behavior.
 
 #### Phase C — Adaptive expression layer
 
-Map events into deterministic continuous dimensions such as energy, coherence,
-convergence, branching, focus, continuity, complexity, and persistence. Keep
-this layer independent from both React rendering and path count.
+**Status:** Complete.
+
+Implemented deterministic `0–1` targets for energy, coherence, convergence,
+branching, focus, continuity, complexity, and persistence. The pure reducer
+uses bounded event-level blending, supports optional Level 2/3 enhancement,
+retains semantic provenance, and remains independent from React, presets,
+renderer parameters, and path count.
 
 #### Phase D — Multi-path prototype
 
