@@ -33,7 +33,13 @@ export function getActiveAttractor(
   elapsedSeconds: number,
   reducedMotion: boolean,
 ): SignalAttractor {
-  if (!intent.cycle || reducedMotion) {
+  if (reducedMotion && intent.cycle) {
+    // Hold a coherent middle family instead of collapsing cyclic cognition
+    // into its initial orbital geometry.
+    return "figure-eight";
+  }
+
+  if (!intent.cycle) {
     return intent.type;
   }
 
@@ -50,8 +56,12 @@ export function getAttractorActivation(
     return 0;
   }
 
-  if (!intent.cycle || reducedMotion) {
-    return reducedMotion ? 0.72 : 1;
+  if (reducedMotion) {
+    return intent.cycle ? 0.82 : 1;
+  }
+
+  if (!intent.cycle) {
+    return 1;
   }
 
   const segmentProgress =

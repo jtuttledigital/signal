@@ -11,7 +11,8 @@
 
 ## 1. Product Summary
 
-SIGNAL is an experimental AI interface built around one continuously evolving visual object.
+SIGNAL is an experimental AI interface built around one continuously evolving
+visual system. Its implemented baseline is one dominant continuous path.
 
 Instead of using separate icons, spinners, waveform assets, or decorative loading animations, the interface uses a single generated signal whose motion parameters change in response to product behavior.
 
@@ -37,17 +38,19 @@ AI interfaces usually communicate state through labels, dots, spinners, color sw
 
 SIGNAL explores a different model:
 
-> A single continuous trace expresses intelligence through motion, energy, rhythm, persistence, and complexity.
+> A dominant continuous trace expresses interaction through motion, energy,
+> rhythm, persistence, and complexity.
 
-SIGNAL is a behavioral language for AI cognition, not an audio visualizer.
+SIGNAL is a behavioral language for AI interaction, not an audio visualizer.
 
 ### Principles
 
 1. **Always alive**  
    The signal never fully disappears while the experience is active.
 
-2. **One continuous trace**  
-   Every behavior comes from the same generative system.
+2. **One continuous baseline**
+   Every behavior comes from the same generative system. One dominant path is
+   the baseline identity, not a permanent hard limit on future expression.
 
 3. **Behavior over symbol**  
    Meaning is communicated through motion rather than icons.
@@ -63,6 +66,14 @@ SIGNAL is a behavioral language for AI cognition, not an audio visualizer.
 
 7. **System documented separately**  
    Controls, presets, principles, and technical notes belong on a separate `/system` route.
+
+8. **Observable events first**
+   Runtime expression is driven primarily by observable interaction events,
+   without requiring privileged model reasoning or hidden chain-of-thought data.
+
+9. **Progressive expression**
+   Complexity is earned by interaction. Geometry remains legible before color,
+   and richer expressions preserve one coherent visual species.
 
 ---
 
@@ -205,6 +216,85 @@ The signal engine should manage:
 - afterimage or persistence
 - animation timing
 
+### Direction V2 runtime architecture
+
+Direction V2 extends the current semantic behavior lifecycle through progressive
+enhancement. The universal event level is sufficient to drive a complete,
+credible experience; tool, workflow, and semantic inputs add expression only
+when they are genuinely available. Missing higher-level inputs must never break
+or impoverish the baseline lifecycle.
+
+#### Level 1 — Universal interaction events
+
+Available to ordinary AI product surfaces:
+
+- focus, typing, and typing pause
+- submit and latency
+- stream start, cadence, and pause
+- completion, interruption, and idle
+
+#### Level 2 — Tool and workflow events
+
+Used when the host exposes them:
+
+- retrieval, tool-call, and file-processing start/finish
+- code execution and image generation
+- multi-step progress, approval, handoff, and background work
+
+#### Level 3 — Optional semantic signals
+
+Used only when genuinely available or transparently derived from observable
+state:
+
+- task complexity, response structure, branching, and novelty
+- confidence or uncertainty proxies
+- convergence and interaction momentum
+
+These inputs do not represent hidden model thought. Level 1 remains the
+graceful-degradation path when Levels 2 and 3 are absent. The detailed event
+catalog lives in [Direction V2](SIGNAL_DIRECTION_V2.md).
+
+### Adaptive expression layer
+
+A future engine-independent mapping layer will translate runtime events into
+continuous expression dimensions such as energy, coherence, convergence,
+branching, focus, continuity, complexity, and persistence. It sits between the
+product event lifecycle and renderer targets so product integrations remain
+observable-event-first and the renderer remains deterministic.
+
+The expression hierarchy is:
+
+1. **Primary path** — the dominant interaction, always clearest and responsible
+   for the main transition.
+2. **Secondary paths** — a minimum number of subordinate paths for justified
+   branches, tools, context, parallel work, or residual memory.
+3. **Field contours** — low-contrast contextual influence that supports active
+   paths and attractors without competing with them.
+
+The current renderer implements only the primary-path baseline. Multi-path and
+field behavior are future phases, not v0.1 requirements. Across all levels,
+complexity must emerge only when earned, resolve as interaction converges, and
+preserve the visual species defined in
+[motion semantics](SIGNAL_MOTION_SEMANTICS.md).
+
+### Implemented runtime event contract
+
+Phase B is implemented in `components/signal/signal-events.ts` as a pure,
+renderer-independent contract:
+
+- a discriminated Level 1 event union for the universal interaction lifecycle
+- optional run-scoped Level 2 workflow events
+- an entirely optional normalized Level 3 semantic envelope whose values are
+  marked `observed`, `derived`, or `external`
+- an immutable transition reducer that rejects stale runs, invalid payloads,
+  invalid transitions, and timestamp regressions without mutating state
+
+`useSignalController` translates its existing observable Product Shell actions
+into this contract and retains its timer and run-ID guards. Accepted normalized
+events continue to drive the existing behavior lifecycle; the renderer receives
+only `SignalBehavior` and remains unaware of focus, input, streaming, and React
+state. Level 2 and Level 3 data are not required or simulated.
+
 ---
 
 ## 7. Type Definitions
@@ -334,7 +424,8 @@ Presets are semantic targets, not separate animations.
 
 ### Base signal
 
-Treat the signal as one unbroken parametric drawing path:
+For the current renderer, treat the primary signal as one unbroken parametric
+drawing path:
 
 ```text
 x = f(t)
@@ -369,6 +460,10 @@ should form, evolve, and dissolve continuously rather than appearing as
 separate animations.
 
 Motion communicates progress without demanding attention.
+
+This single path is the baseline identity, not a permanent architectural limit.
+Future coordinated paths must remain subordinate to it and are sequenced after
+the adaptive expression layer; see the post-v0.1 roadmap.
 
 ### Attractor subsystem
 
@@ -428,14 +523,15 @@ muddy full-screen bloom.
 
 ### Layering
 
-Render a restrained set of traces:
+For the current single-path renderer, render a restrained set of visual passes:
 
 1. broad low-opacity energy field
-2. medium-width secondary trace
+2. medium-width support pass
 3. crisp primary trace
-4. optional faint offset trace for depth
+4. optional faint offset pass for depth
 
-Keep the principal line readable.
+These passes are render treatment for one primary path, not semantic secondary
+paths. Keep the principal line readable.
 
 ### Pointer influence
 
@@ -1167,13 +1263,15 @@ At the end of each task, report:
 
 Only consider these after v0.1 is stable:
 
-## Design Direction Update (v0.1.1)
+### Design Direction Update (v0.1.1)
 
 The project has evolved beyond an oscilloscope-inspired visualization.
 
 The long-term goal is to create a continuous behavioral language for AI.
 
-The signal represents the visible edge of a larger cognitive field.
+The signal represents the visible edge of a larger interaction field. It may
+communicate cognition through observable behavior, but it must not claim to
+reveal privileged or hidden model thought.
 
 Motion communicates intelligence through continuous behavior rather than discrete animations.
 
@@ -1191,29 +1289,66 @@ Avoid literal icons or decorative morphing.
 
 Instead, allow temporary mathematical attractors to emerge naturally from the signal before dissolving back into continuous motion.
 
-The signal should communicate cognition rather than audio.
+The signal should communicate interaction rather than audio.
 
-### v0.2
+### Direction V2 portfolio model
 
-- real audio amplitude simulation
-- more sophisticated response behavior
-- shareable parameter presets
-- screen-recording mode
-- optional light mode exploration
+The portfolio story has three connected surfaces:
 
-### v0.3
+1. **Product Experience** — the credible interaction surface driven by
+   observable events and capable of working with the Level 1 baseline alone.
+2. **SIGNAL Engine** — the deterministic, reusable rendering and expression
+   system, independent from React frame rendering and any specific AI provider.
+3. **SIGNAL Lab** — the `/system` design and tuning environment for behavior,
+   hierarchy, fields, attractors, accessibility, and reduced motion.
 
-- WebGL or shader prototype for true spatial depth
-- 3D curve projection
-- higher-quality phosphor persistence
-- performance comparison against Canvas 2D
+This model separates the shipped experience, reusable technical system, and
+design process without requiring additional product routes. Direction V2 does
+not change the current Product Shell or route plan.
 
-### v0.4
+### Direction V2 implementation phases
 
-- optional real LLM integration
-- audio input with explicit permission
-- design-token package
-- embeddable `<Signal />` component
-- documented state-machine API
+#### Phase A — Documentation alignment
 
-Do not build these early.
+Align the durable rules, architecture, motion semantics, and portfolio story
+while keeping the current renderer and presets stable.
+
+#### Phase B — Runtime event model
+
+**Status:** Complete.
+
+Implemented typed Level 1 events, optional Level 2 and Level 3 inputs, immutable
+ordering rules, and run-scoped stale-event rejection. Dependency-free reducer
+tests validate progressive enhancement and graceful degradation without
+changing rendering behavior.
+
+#### Phase C — Adaptive expression layer
+
+Map events into deterministic continuous dimensions such as energy, coherence,
+convergence, branching, focus, continuity, complexity, and persistence. Keep
+this layer independent from both React rendering and path count.
+
+#### Phase D — Multi-path prototype
+
+Prototype one controlled secondary-path use case only after the event and
+expression layers are stable. The primary path must remain dominant; the
+secondary path must appear, coordinate, converge, and dissolve continuously.
+
+#### Phase E — Field and structural moments
+
+Explore low-contrast contextual fields and brief resolved structures without
+competing with the primary path.
+
+#### Phase F — Color exploration
+
+Introduce restrained semantic color only after the geometry and hierarchy are
+legible in monochrome.
+
+#### Phase G — Portfolio integration
+
+Package the Product Experience, Engine/Lab explanation, motion recording, and
+case study for deployment.
+
+Possible later explorations such as a real model integration, audio input,
+WebGL, 3D projection, or an embeddable package remain optional and require
+separate scope. Do not build them as prerequisites for Direction V2.

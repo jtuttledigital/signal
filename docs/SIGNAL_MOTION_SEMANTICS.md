@@ -6,7 +6,20 @@
 
 SIGNAL is one continuous behavioral language, not a collection of separate animations.
 
-Every behavior should preserve the same visual identity while changing geometry, energy, rhythm, convergence, and stability to communicate a different cognitive action.
+Every behavior should preserve the same visual identity while changing geometry,
+energy, rhythm, convergence, and stability to communicate a different semantic
+action.
+
+One continuous path remains SIGNAL's baseline identity, not a permanent hard
+limit. When observable interaction events justify greater expression, a small
+number of coordinated subordinate paths or restrained field contours may
+appear. The primary path must remain visually dominant and recognizable.
+
+SIGNAL visualizes the observable interaction field between a person and an
+intelligent system. It does not expose or claim to reconstruct hidden model
+thought, and it requires no privileged reasoning data. See
+[Direction V2](SIGNAL_DIRECTION_V2.md) for the runtime signal levels and
+[the build plan](SIGNAL_BUILD_PLAN.md) for implementation sequencing.
 
 > SIGNAL is quietly aware, deeply responsive, and mathematically expressive.
 
@@ -16,7 +29,7 @@ Every behavior should preserve the same visual identity while changing geometry,
 
 Always present across all behaviors:
 
-- one continuous mathematical trace
+- one dominant continuous mathematical trace as the baseline
 - restrained cyan identity
 - dark spatial field
 - phosphor-like persistence
@@ -64,6 +77,20 @@ Short-lived qualities that modify a behavior without becoming new public states:
 
 5. **Progress without demanding attention**  
    Motion should remain informative, calm, and non-intrusive.
+
+6. **Earned complexity**
+   Additional paths, fields, or structures appear only when semantically
+   justified by observable events. Complexity must reduce, merge, or dissolve
+   as the interaction converges.
+
+7. **Primary hierarchy**
+   The primary path owns the main transition and remains dominant. Secondary
+   paths support branches, tools, context, or residual memory; fields remain
+   lower contrast than paths.
+
+8. **Geometry before color**
+   Every behavior and hierarchy must remain legible through geometry and motion
+   before restrained color modulation is introduced.
 
 ## Behavior profiles
 
@@ -198,3 +225,5 @@ The refinement phase succeeds when:
 - motion remains calm and non-intrusive
 - the signal feels mathematical but not mechanical
 - SIGNAL is recognizable from motion alone
+- richer expressions resolve toward clarity as the interaction converges
+- any secondary paths or fields reinforce rather than obscure the primary path

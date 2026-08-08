@@ -85,3 +85,15 @@ Motion should communicate progress without demanding attention.
 - Completion should lock, hold, and exhale rather than simply reduce amplitude.
 - Motion should communicate progress without demanding attention.
 - Do not use color, amplitude, or speed alone to distinguish behaviors.
+
+## Adaptive Expression
+
+- SIGNAL uses observable interaction events as its primary runtime inputs.
+- The system must not require privileged model reasoning or hidden chain-of-thought data.
+- One dominant continuous primary path remains the baseline identity; restrained subordinate paths may appear when semantically justified.
+- The primary path must remain visually dominant and recognizable in every expression.
+- Additional paths may represent branches, tools, context, or residual memory; use the minimum number needed.
+- Complexity must emerge only when the interaction earns it and decrease as the system converges.
+- Geometry and motion must remain semantically legible before color is introduced.
+- Preserve one coherent visual species across single-path, multi-path, field, and structural expressions.
+- Avoid random path multiplication, decorative particles, and constant high complexity.

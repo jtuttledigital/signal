@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "node --experimental-default-type=module --test --experimental-strip-types components/signal/signal-events.test.mjs"
   },
   "dependencies": {
     "next": "latest",

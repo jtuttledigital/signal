@@ -44,10 +44,21 @@ const SIGNAL_RGB = "114, 230, 255";
 const TAU = Math.PI * 2;
 const SETTLED_LISTENING_PARAMETERS: SignalParameters = {
   ...SIGNAL_PRESETS.listening.parameters,
-  amplitude: 0.31,
-  complexity: 0.19,
-  velocity: 0.26,
-  persistence: 0.87,
+  complexity: 0.16,
+  velocity: 0.24,
+  thickness: 0.44,
+  noise: 0.008,
+  focus: 0.78,
+  depth: 0.3,
+};
+const SETTLED_LISTENING_OSCILLATOR: OscillatorParameters = {
+  ...SIGNAL_PRESETS.listening.oscillator,
+  xAmplitude: 0.53,
+  yAmplitude: 0.44,
+  harmonic: 0.09,
+  symmetry: 0.86,
+  persistence: 0.88,
+  energy: 0.42,
 };
 
 type MutableParameters = {
@@ -158,7 +169,9 @@ export class SignalEngine {
     this.target = isSettledListening
       ? SETTLED_LISTENING_PARAMETERS
       : preset.parameters;
-    this.targetOscillator = preset.oscillator;
+    this.targetOscillator = isSettledListening
+      ? SETTLED_LISTENING_OSCILLATOR
+      : preset.oscillator;
     this.transitionMs = isSettledListening ? 960 : preset.transitionMs;
   }
 
@@ -411,8 +424,7 @@ export class SignalEngine {
       }
 
       context.strokeStyle = `rgba(${SIGNAL_RGB}, ${alpha})`;
-      context.lineWidth =
-        (0.7 + contour * 0.48 + current.depth * 0.8) / Math.sqrt(this.dpr);
+      context.lineWidth = 0.7 + contour * 0.48 + current.depth * 0.8;
       context.stroke();
     }
   }
@@ -440,10 +452,16 @@ export class SignalEngine {
         this.pointerX * this.pointerStrength * 0.012);
     const centerY = height * 0.46;
     const amplitudeMotionScale = this.reducedMotion ? 0.58 : 1;
-    const breath =
+    const breathPhase =
+      this.elapsedSeconds * (0.42 + current.velocity * 0.16);
+    const breathAmount = 0.1 - current.complexity * 0.035;
+    const breathAsymmetry = 1 - currentOscillator.symmetry;
+    const xBreath = 0.9 + Math.sin(breathPhase) * breathAmount;
+    const yBreath =
       0.9 +
-      Math.sin(this.elapsedSeconds * (0.42 + current.velocity * 0.16)) *
-        (0.1 - current.complexity * 0.035);
+      Math.sin(breathPhase + breathAsymmetry * 1.4) *
+        breathAmount *
+        (0.88 + currentOscillator.symmetry * 0.12);
     const energyScale = 0.72 + currentOscillator.energy * 0.42;
     const focusScale = 1 - current.focus * 0.1;
     const xAmplitude =
@@ -452,7 +470,7 @@ export class SignalEngine {
       amplitudeScale *
       energyScale *
       focusScale *
-      breath;
+      xBreath;
     const yAmplitude =
       height *
       (0.1 + currentOscillator.yAmplitude * 0.22) *
@@ -460,7 +478,7 @@ export class SignalEngine {
       amplitudeMotionScale *
       energyScale *
       focusScale *
-      breath;
+      yBreath;
     const phase = this.elapsedSeconds;
     const phaseDriftScale = this.reducedMotion ? 0.08 : 1;
     const xPhase =
@@ -609,8 +627,7 @@ export class SignalEngine {
     }
 
     context.strokeStyle = `rgba(${SIGNAL_RGB}, ${alpha})`;
-    context.lineWidth =
-      (0.55 + current.thickness * 1.7) * widthScale / Math.sqrt(this.dpr);
+    context.lineWidth = (0.55 + current.thickness * 1.7) * widthScale;
     context.stroke();
   }
 }
