@@ -278,6 +278,37 @@ truth. Missing optional data preserves valid defaults.
 The expression layer is not connected to presets, path count, Canvas rendering,
 or React. Phase C therefore changes no visible output.
 
+### Rendering intent adapter
+
+Phase D1 implements the next pure boundary:
+
+```text
+Expression → Render Intent → Renderer
+```
+
+Expression describes interaction semantics. `SignalRenderIntent` describes
+normalized visual tendencies for primary activity and order, spatial expansion
+and alignment, restrained secondary expression, field influence, and attractor
+influence and stability. `SignalEngine` remains responsible for actual geometry,
+sampling, compositing, and frame interpolation.
+
+The adapter is deterministic, clamps every intent to `0–1`, and always returns
+a complete contract from Level 1-only expression. Secondary-path weight is
+earned through branching and complexity, suppressed by convergence, independent
+of energy alone, and capped below the implicit full authority of the primary
+path. Field influence is separately capped and simplified by convergence.
+
+Phase D1 is not connected to the controller, presets, Canvas, or engine, so it
+changes no visible output. Future integration must use:
+
+```text
+preset baseline + adaptive intent modulation
+```
+
+Presets remain the identity and semantic baseline; adaptive intent may later
+provide restrained live variation. It must not replace presets or allow
+supporting expression to outrank the primary path.
+
 The expression hierarchy is:
 
 1. **Primary path** — the dominant interaction, always clearest and responsible
@@ -1348,10 +1379,20 @@ uses bounded event-level blending, supports optional Level 2/3 enhancement,
 retains semantic provenance, and remains independent from React, presets,
 renderer parameters, and path count.
 
-#### Phase D — Multi-path prototype
+#### Phase D1 — Rendering intent adapter
+
+**Status:** Complete.
+
+Implemented a pure `SignalExpressionTargets` to `SignalRenderIntent` adapter
+with normalized primary, spatial, secondary-path, field, and attractor
+tendencies. Dominance caps, convergence suppression, deterministic defaults,
+and semantic relationships are covered by focused tests. No renderer integration
+or visual change is included.
+
+#### Phase D2 — Controlled multi-path prototype
 
 Prototype one controlled secondary-path use case only after the event and
-expression layers are stable. The primary path must remain dominant; the
+expression/intent layers are stable. The primary path must remain dominant; the
 secondary path must appear, coordinate, converge, and dissolve continuously.
 
 #### Phase E — Field and structural moments

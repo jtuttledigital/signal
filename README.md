@@ -52,6 +52,8 @@ parameter playground for `/system` is deferred to a later phase.
   optional workflow extensions, semantic envelope, and pure transition rules.
 - `signal-expression` maps accepted runtime events into eight deterministic,
   normalized expression targets without changing presets or renderer output.
+- `signal-render-intent` converts expression meaning into bounded,
+  renderer-neutral visual tendencies; it is not connected to Canvas yet.
 - `useSignalController` normalizes observable product events, owns timers and
   run IDs, and preserves stale-response protection before renderer behaviors
   change.
@@ -87,4 +89,5 @@ npm run build
 - Direction V2 documentation alignment — complete
 - Direction V2 runtime event model — complete
 - Direction V2 adaptive expression — complete
-- Direction V2 rendering adapter / controlled integration — pending
+- Direction V2 rendering intent adapter — complete
+- Direction V2 controlled visual integration — pending
